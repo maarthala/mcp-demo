@@ -6,21 +6,7 @@ import uvicorn
 
 app = FastAPI()
 
-# # Tool definitions
-# TOOLS = [
-#     mcp_types.Tool(
-#         name="calculator",
-#         description="Basic arithmetic operations",
-#         parameters={
-#             "operation": {"type": "string", "enum": ["add", "subtract", "multiply", "divide"]},
-#             "a": {"type": "number"},
-#             "b": {"type": "number"}
-#         }
-#     )
-# ]
 
-
-# Tool definitions
 TOOLS = [
     mcp_types.Tool(
         name="calculator",
@@ -76,4 +62,4 @@ async def execute_tool(request: dict):
 
 if __name__ == "__main__":
     uvicorn.run("mcp-server:app", host="0.0.0.0", port=8000, reload=True)
-# Run the server with: uvicorn mcp_server:app --host 127.0.0.1
+

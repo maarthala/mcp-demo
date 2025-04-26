@@ -38,9 +38,8 @@ async def process_prompt(request: ToolRequest):
     # Get available tools
     tools = requests.get(f"{MCP_SERVER_URL}/mcp/discover").json()
     try:
-        # Dynamic LLM processing
         llm_raw = call_llm(request.prompt)
-        llm_response = eval(llm_raw)  # Convert string to dict (use proper parsing in production)
+        llm_response = eval(llm_raw) 
     
         # Execute tool
         result = requests.post(
