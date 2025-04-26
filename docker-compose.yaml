@@ -5,31 +5,15 @@ services:
     image: ollama/ollama:latest
     container_name: ollama-server
     ports:
-      - "11434:11434"  # Ollama API
+      - "11434:11434"
     volumes:
-      - ollama_data:/root/.ollama  # Optional: persist models
+      - ollama_data:/root/.ollama
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:11434"]
       interval: 10s
       timeout: 5s
       retries: 5
     restart: unless-stopped
-
-  # ollama-init:
-  #   image: curlimages/curl:latest
-  #   container_name: ollama-init
-  #   depends_on:
-  #     ollama:
-  #       condition: service_healthy
-  #   entrypoint: >
-  #     sh -c "
-  #       until curl -s http://ollama:11434 > /dev/null; do echo Waiting for ollama...; sleep 2; done;
-  #       echo 'Ollama ready. Pulling model...';
-  #       curl -X POST http://ollama:11434/api/pull -d '{\"name\": \"deepseek-coder:latest\"}';
-  #       sleep infinity
-  #     "
-  #   restart: "no"
-
 
   mcp-client:
     image: mcp-client
