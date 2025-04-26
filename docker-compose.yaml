@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama-server
+    ports:
+      - "11434:11434"  # Ollama API
+    volumes:
+      - ollama_data:/root/.ollama  # Optional: persist models
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ollama-init:
+  #   image: curlimages/curl:latest
+  #   container_name: ollama-init
+  #   depends_on:
+  #     ollama:
+  #       condition: service_healthy
+  #   entrypoint: >
+  #     sh -c "
+  #       until curl -s http://ollama:11434 > /dev/null; do echo Waiting for ollama...; sleep 2; done;
+  #       echo 'Ollama ready. Pulling model...';
+  #       curl -X POST http://ollama:11434/api/pull -d '{\"name\": \"deepseek-coder:latest\"}';
+  #       sleep infinity
+  #     "
+  #   restart: "no"
+
+
+  mcp-client:
+    image: mcp-client
+    build:
+      context: .
+      dockerfile: deploy/dockerfile.mcp
+    entrypoint: >
+      sh -c "python mcp-client.py"
+    volumes:
+      - ./src:/app
+    ports:
+      - "8002:8002"  # Expose the client port
+    expose:
+      - "8002"
+
+  mcp-server:
+    image: mcp-server
+    build:
+      context: .
+      dockerfile: deploy/dockerfile.mcp
+    entrypoint: >
+      sh -c "python mcp-server.py"
+    volumes:
+      - ./src:/app
+    ports:
+      - "8000:8000"
+    expose:
+      - "8000"
+
+
+volumes:
+  ollama_data:
